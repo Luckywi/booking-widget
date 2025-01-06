@@ -329,129 +329,129 @@ export default function DateStaffSelection({
 
   return (
     <div className="space-y-6">
-      <div className="bg-gray-50 p-4 rounded-lg space-y-4">
-        <div className="flex justify-between items-center">
-          <div>
-            <h3 className="font-medium">{selectedService?.title}</h3>
-            <p className="text-sm text-gray-500">
-              {formatDuration(serviceDuration)} - {selectedService?.price}€
-            </p>
-          </div>
-          <div>
-          <Select 
- defaultValue="no_preference"
- value={selectedStaff?.id || "no_preference"}
- onValueChange={(value) => {
-   if (value === "no_preference") {
-     setSelectedStaff(null);
-   } else {
-     const selected = staff.find(s => s.id === value);
-     setSelectedStaff(selected || null);
-   }
- }}
->
- <SelectTrigger className="w-48">
-   <SelectValue defaultValue="Avec qui ?">
-     {selectedStaff ? `${selectedStaff.firstName} ${selectedStaff.lastName}` : "Avec qui ?"}
-   </SelectValue>
- </SelectTrigger>
- <SelectContent>
-   <SelectItem value="no_preference">Sans préférence</SelectItem>
-   {staff.map((member) => (
-     <SelectItem key={member.id} value={member.id}>
-       {member.firstName} {member.lastName}
-     </SelectItem>
-   ))}
- </SelectContent>
-</Select>
-
-
-
-</div>
+  {/* En-tête avec résumé du service */}
+  <div className="bg-gray-50 p-4 rounded-md space-y-4">
+    <div className="flex justify-between items-center">
+      <div>
+        <h3 className="font-medium text-base">{selectedService?.title}</h3>
+        <p className="text-sm text-gray-500">
+          {formatDuration(serviceDuration)} - {selectedService?.price}€
+        </p>
+      </div>
+      <div>
+        <Select 
+          defaultValue="no_preference"
+          value={selectedStaff?.id || "no_preference"}
+          onValueChange={(value) => {
+            if (value === "no_preference") {
+              setSelectedStaff(null);
+            } else {
+              const selected = staff.find(s => s.id === value);
+              setSelectedStaff(selected || null);
+            }
+          }}
+        >
+          <SelectTrigger className="w-48 border-gray-200 hover:border-gray-300 transition-colors">
+            <SelectValue placeholder="Avec qui ?">
+              {selectedStaff ? `${selectedStaff.firstName} ${selectedStaff.lastName}` : "Avec qui ?"}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="no_preference" className="text-gray-500">Sans préférence</SelectItem>
+            {staff.map((member) => (
+              <SelectItem key={member.id} value={member.id}>
+                {member.firstName} {member.lastName}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
     </div>
-
-      {/* Calendrier */}
-      <div className="border rounded-lg">
-        <div className="grid grid-cols-7 border-b">
-          {weekDays.map((day) => (
-            <div key={day.toISOString()} className="p-2 text-center border-r last:border-r-0">
-              <div className="font-medium">
-                {format(day, 'EEEE', { locale: fr })}
-              </div>
-              <div className="text-sm text-gray-500">
-                {format(day, 'd', { locale: fr })}
-                <span className="ml-1">
-                  {format(day, 'MMM', { locale: fr })}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Navigation */}
-        <div className="flex justify-between p-2 border-b">
-          <button
-            onClick={() => setWeekStart(addDays(weekStart, -7))}
-            className="p-1 hover:bg-gray-100 rounded-full"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <button
-            onClick={() => setWeekStart(addDays(weekStart, 7))}
-            className="p-1 hover:bg-gray-100 rounded-full"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Grille des horaires */}
-      <div className="grid grid-cols-7">
-        {weekDays.map((day) => {
-          const dayStr = format(day, 'yyyy-MM-dd');
-          const slots = availableSlots[dayStr] || [];
-
-          return (
-            <div key={dayStr} className="min-h-[400px] p-2 border-r last:border-r-0">
-              {slots.map((slot) => (
-                <button
-                  key={slot.time}
-                  className={`w-full py-2 px-3 mb-2 text-sm rounded transition-colors
-                    ${selectedStaff 
-                      ? slot.availableStaff.some(s => s.id === selectedStaff.id)
-                        ? 'hover:bg-blue-50 bg-white border border-gray-200'
-                        : 'text-gray-400 bg-gray-50 cursor-not-allowed'
-                      : slot.availableStaff.length > 0
-                        ? 'hover:bg-blue-50 bg-white border border-gray-200'
-                        : 'text-gray-400 bg-gray-50 cursor-not-allowed'
-                    }
-                  `}
-                  disabled={selectedStaff 
-                    ? !slot.availableStaff.some(s => s.id === selectedStaff.id)
-                    : slot.availableStaff.length === 0
-                  }
-                  onClick={() => handleTimeSelect(day, slot)}
-                >
-                  {slot.time}
-                </button>
-              ))}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-
-    {loading && (
-      <div className="text-center text-gray-500">
-        Chargement des disponibilités...
-      </div>
-    )}
-
-    {!loading && Object.values(availableSlots).every(slots => slots.length === 0) && (
-      <div className="text-center text-gray-500 p-4">
-        Aucun créneau disponible dans les 8 prochaines semaines.
-        Veuillez nous contacter directement pour plus d'informations.
-      </div>
-    )}
   </div>
+
+  {/* Calendrier */}
+  <div className="border rounded-md">
+    <div className="grid grid-cols-7 border-b">
+      {weekDays.map((day) => (
+        <div key={day.toISOString()} className="p-3 text-center border-r last:border-r-0">
+          <div className="font-medium text-sm">
+            {format(day, 'EEEE', { locale: fr })}
+          </div>
+          <div className="text-sm text-gray-500">
+            {format(day, 'd', { locale: fr })}
+            <span className="ml-1">
+              {format(day, 'MMM', { locale: fr })}
+            </span>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    {/* Navigation */}
+    <div className="flex justify-between p-2 border-b bg-gray-50">
+      <button
+        onClick={() => setWeekStart(addDays(weekStart, -7))}
+        className="p-1.5 rounded-md hover:bg-gray-100 transition-colors"
+      >
+        <ChevronLeft className="w-4 h-4" />
+      </button>
+      <button
+        onClick={() => setWeekStart(addDays(weekStart, 7))}
+        className="p-1.5 rounded-md hover:bg-gray-100 transition-colors"
+      >
+        <ChevronRight className="w-4 h-4" />
+      </button>
+    </div>
+
+    {/* Grille des horaires */}
+    <div className="grid grid-cols-7">
+      {weekDays.map((day) => {
+        const dayStr = format(day, 'yyyy-MM-dd');
+        const slots = availableSlots[dayStr] || [];
+
+        return (
+          <div key={dayStr} className="min-h-[400px] p-2 border-r last:border-r-0">
+            {slots.map((slot) => (
+              <button
+                key={slot.time}
+                className={`
+                  w-full py-2 px-3 mb-2 text-sm rounded-md
+                  transition-all duration-200 font-medium
+                  ${selectedStaff 
+                    ? slot.availableStaff.some(s => s.id === selectedStaff.id)
+                      ? 'hover:bg-black hover:text-white bg-white border border-gray-200'
+                      : 'text-gray-400 bg-gray-50 cursor-not-allowed'
+                    : slot.availableStaff.length > 0
+                      ? 'hover:bg-black hover:text-white bg-white border border-gray-200'
+                      : 'text-gray-400 bg-gray-50 cursor-not-allowed'
+                  }
+                `}
+                disabled={selectedStaff 
+                  ? !slot.availableStaff.some(s => s.id === selectedStaff.id)
+                  : slot.availableStaff.length === 0
+                }
+                onClick={() => handleTimeSelect(day, slot)}
+              >
+                {slot.time}
+              </button>
+            ))}
+          </div>
+        );
+      })}
+    </div>
+  </div>
+
+  {loading && (
+    <div className="text-center text-gray-500">
+      Chargement des disponibilités...
+    </div>
+  )}
+
+  {!loading && Object.values(availableSlots).every(slots => slots.length === 0) && (
+    <div className="text-center text-gray-500 p-4">
+      Aucun créneau disponible dans les 8 prochaines semaines.
+      Veuillez nous contacter directement pour plus d'informations.
+    </div>
+  )}
+</div>
   );
