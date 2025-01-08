@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { db } from '@/lib/firebase/config';
 import { collection, query, where, getDocs, addDoc } from 'firebase/firestore';
-import type { Service } from '@/types/booking';
+import type { Service, Staff, ServiceCategory } from '@/types/booking';
 import DateStaffSelection from './DateStaffSelection';
 import ClientForm from './ClientForm'; // Ajout de l'import
 import { useRouter } from 'next/navigation';
@@ -16,21 +16,6 @@ interface BookingWidgetProps {
   businessId: string;
 }
 
-interface Staff {
-    id: string;
-    firstName: string;
-    lastName: string;
-    businessId: string;
-  }
-
-  interface ServiceCategory {
-    id: string;
-    title: string;
-    order: number;
-    businessId: string;
-  }
-  
-
 export default function BookingWidget({ businessId }: BookingWidgetProps) {
   const [step, setStep] = useState(1);
   const [services, setServices] = useState<Service[]>([]);
@@ -38,10 +23,11 @@ export default function BookingWidget({ businessId }: BookingWidgetProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(null);
-const [selectedStaffMember, setSelectedStaffMember] = useState<Staff | null>(null);
-const [staffList, setStaffList] = useState<Staff[]>([]);
-const router = useRouter();
-const [serviceCategories, setServiceCategories] = useState<ServiceCategory[]>([]);
+  const [selectedStaffMember, setSelectedStaffMember] = useState<Staff | null>(null);
+  const [staffList, setStaffList] = useState<Staff[]>([]);
+  const router = useRouter();
+  const [serviceCategories, setServiceCategories] = useState<ServiceCategory[]>([]);
+
 
 
   const formatDuration = (duration: { hours: number; minutes: number }) => {
@@ -85,10 +71,11 @@ const [serviceCategories, setServiceCategories] = useState<ServiceCategory[]>([]
           ...doc.data()
         })) as Service[];
   
-        const categoriesData = categoriesSnapshot.docs.map(doc => ({
+        const categoriesData = (categoriesSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
-        })).sort((a, b) => a.order - b.order) as ServiceCategory[];
+        })) as ServiceCategory[]).sort((a, b) => a.order - b.order);
+        
   
         const staffData = staffSnapshot.docs.map(doc => ({
           id: doc.id,
